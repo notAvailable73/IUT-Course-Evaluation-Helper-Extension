@@ -1,11 +1,13 @@
 {
     "manifest_version": 3,
-    "name": "Evaluate",
-    "description": "An Extension",
+    "name": "IUT Course Evaluation Helper",
+    "description": "It is designed to help IUT students quickly complete their course evaluations each semester.",
     "version": "1.0",
     "action": 
     {
-      "default_popup": "popup.html"
+      "default_popup": "popup.html",
+      
+      "default_icon": "images/logo.png"
     },
     "content_scripts": [
       {
