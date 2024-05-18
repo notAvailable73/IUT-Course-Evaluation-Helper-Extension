@@ -28,8 +28,7 @@ This is a browser extension for Chrome and other Chromium-based browsers like Mi
      - ![Installed extension](images/installed_extension.png)
 
 ## How to Use the Extension
-
-1. **Enable the Extension**
+ 
    - The extension icon will appear next to the address bar in your browser.
      - ![Extension icon](images/extension_icon.png)
    - Go to [SIS-Evaluation](https://sis.iutoic-dhaka.edu/evaluation-list) to evaluate any course. Select any course that has not been evaluated.
