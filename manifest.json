@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "Evaluate",
+    "description": "An Extension",
+    "version": "1.0",
+    "action": 
+    {
+      "default_popup": "popup.html"
+    },
+    "content_scripts": [
+      {
+        "matches": ["https://sis.iutoic-dhaka.edu/evaluate-course/*"],
+        "js": ["contentScript.js"],
+        "run_at": "document_end"
+      }
+    ],
+    "host_permissions": ["<all_urls>"]
+  }
+  
