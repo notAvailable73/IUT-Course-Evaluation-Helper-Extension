@@ -1,6 +1,6 @@
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) 
 {
-    if (request.submit==true)
+    if (request.submit)
     {
         chrome.tabs.query({active: true, currentWindow: true}, function (tabs)
         {

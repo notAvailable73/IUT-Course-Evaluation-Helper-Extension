@@ -11,13 +11,13 @@
       {
         "matches": ["https://sis.iutoic-dhaka.edu/evaluate-course/*"],
         "js": ["contentScript.js"],
-        "run_at": "document_end"
+        "run_at": "document_start"
       }
     ],
     "host_permissions": ["<all_urls>"],
     "background": {
       "service_worker": "background.js"
     },
-    "permissions": ["storage"]
+    "permissions": ["storage", "activeTab", "scripting"]
   }
   
