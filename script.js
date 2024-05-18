@@ -1,29 +1,40 @@
-document.getElementById('ratingForm').addEventListener('submit', function(event) {
-    event.preventDefault();  
- 
-    var rating = document.querySelector('input[name="rating"]:checked').value;
 
-    chrome.storage.local.set({'Rating': rating});
+const initialize = function () { // Load previous values
+  chrome.storage.local.get(['Rating', 'Feedback'], function (result) {
 
-   
- 
-    console.log("Selected rating: " + rating);
+    let rating = result.Rating;
+    if (rating === undefined || rating === null || rating === "") { // Default vallue assign for first installation
+      rating = "5";
+    } 
+    let nthCheckBox = document.querySelector(`input[name="rating"][value="${rating}"]`);
+    nthCheckBox.click();
 
-    chrome.storage.local.get('Rating', function(result) {
-      console.log('Stored Rating: ' + result.Rating);
-  });
-    
-    var feedback = document.getElementById('feedback').value;
 
-    chrome.storage.local.set({'Feedback': feedback});
- 
-    console.log("Feedback: " + feedback);
+    let feedback = result.Feedback;
+    if (feedback === undefined || feedback === null || feedback === "") { // Default vallue assign for first installation
+      feedback = "N/A";
+    } 
+    var textarea = document.getElementById('feedback');
+    textarea.value = feedback;
+  })
+}
 
-    chrome.storage.local.get('Feedback', function(result) 
-    {
-      console.log('Stored feedback: ' + result.Feedback);
-    });
+initialize();
 
-    chrome.runtime.sendMessage({submit:true});
- 
-  });
+
+document.getElementById('ratingForm').addEventListener('submit', function (event) { // if submit button is pressed
+  event.preventDefault();
+
+  var rating = document.querySelector('input[name="rating"]:checked').value;
+  chrome.storage.local.set({ 'Rating': rating }); //save the value in local storage
+
+
+  var feedback = document.getElementById('feedback').value;
+  chrome.storage.local.set({ 'Feedback': feedback }); //save the value in local storage
+
+
+  chrome.runtime.sendMessage({ submit: true }); // send message to background.js when submit is pressed
+
+});
+
+
