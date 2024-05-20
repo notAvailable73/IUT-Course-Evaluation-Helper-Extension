@@ -5,8 +5,12 @@ const fillTheTextBoxes = function () {
             feedback = "N/A";
         }
         var textareas = document.getElementsByClassName('form-control');
-        for (let i = 0; i < textareas.length - 3; i++) {
+        for (let i = 0; i < textareas.length; i++) {
             textareas[i].value = feedback;
+
+            // trigger the user interaction true
+            textareas[i].dispatchEvent(new Event('input', { bubbles: true }));
+            textareas[i].dispatchEvent(new Event('change', { bubbles: true }));
         }
     });
 

@@ -6,7 +6,7 @@ This browser extension is designed to help IUT students quickly complete their c
 
 For **IUT students**, evaluating each course every semester involves answering around 36 questions: 9 are text boxes, and 27 are radio buttons where students rate from 1 to 5 stars. This process is very time-consuming, especially with 10 or more courses to evaluate.
 
-This extension is created to save time. With one click, all questions will be filled with your provided values. Three questions are skipped as we believe those questions are important to be filled by students.
+This extension is created to save time. With one click, all questions will be filled with your provided values.
 
 ## Download and Installation Guide
 
