@@ -54,7 +54,7 @@ input[type="radio"]:checked+label {
   color: #000;
 }
 
-input[type="submit"] {
+input[type="submit"], button[type="button"] {
   margin-top: 20px;
   padding: 10px 20px;
   background-color: #fff;
@@ -66,12 +66,12 @@ input[type="submit"] {
   transition: background-color 0.3s ease;
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover, button[type="button"]:hover {
   background-color: #555;
   color: #fff;
 }
 
-input[type="submit"]:active {
+input[type="submit"]:active, button[type="button"]:active {
   background-color: #222222;  
 }
 
