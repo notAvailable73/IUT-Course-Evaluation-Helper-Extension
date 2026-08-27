@@ -1,25 +1,25 @@
 {
-    "manifest_version": 3,
-    "name": "IUT Course Evaluation Helper",
-    "description": "It is designed to help IUT students quickly complete their course evaluations each semester.",
-    "version": "1.0",
-    "action": 
+  "manifest_version": 3,
+  "name": "IUT Course Evaluation Helper",
+  "description": "Helps IUT students quickly fill course evaluation forms on SIS.",
+  "version": "1.2.0",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "images/logo.png"
+  },
+  "content_scripts": [
     {
-      "default_popup": "popup.html",
-      
-      "default_icon": "images/logo.png"
-    },
-    "content_scripts": [
-      {
-        "matches": ["https://sis.iutoic-dhaka.edu/evaluate-course/*"],
-        "js": ["contentScript.js"],
-        "run_at": "document_start"
-      }
-    ],
-    "host_permissions": ["<all_urls>"],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "permissions": ["storage", "activeTab", "scripting"]
-  }
-  
+      "matches": [
+        "https://sis.iutoic-dhaka.edu/evaluate-course/*",
+        "https://sis.iutoic-dhaka.edu/evaluation-list*"
+      ],
+      "js": ["contentScript.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "host_permissions": ["https://sis.iutoic-dhaka.edu/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage", "activeTab"]
+}
