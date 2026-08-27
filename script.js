@@ -1,129 +1,150 @@
+const DEFAULT_RATING = "5";
+const DEFAULT_FEEDBACK = "N/A";
 
-const initialize = function () { // Load previous values
-  chrome.storage.local.get(['Rating', 'Feedback'], function (result) {
+const form = document.getElementById("ratingForm");
+const feedbackInput = document.getElementById("feedback");
+const fillCurrentBtn = document.getElementById("fillCurrentBtn");
+const submitAllBtn = document.getElementById("submitAllBtn");
+const statusText = document.getElementById("status");
+const pageStateText = document.getElementById("pageState");
 
-    let rating = result.Rating;
-    if (rating === undefined || rating === null || rating === "") { // Default vallue assign for first installation
-      rating = "5";
-    }
-    let nthCheckBox = document.querySelector(`input[name="rating"][value="${rating}"]`);
-    nthCheckBox.click();
-
-
-    let feedback = result.Feedback;
-    if (feedback === undefined || feedback === null || feedback === "") { // Default vallue assign for first installation
-      feedback = "N/A";
-    }
-    var textarea = document.getElementById('feedback');
-    textarea.value = feedback;
-  })
+function getStoredSettings() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(["Rating", "Feedback"], function (result) {
+      resolve({
+        rating: result.Rating || DEFAULT_RATING,
+        feedback: result.Feedback || DEFAULT_FEEDBACK
+      });
+    });
+  });
 }
 
-initialize();
+function saveSettings(settings) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({
+      Rating: settings.rating,
+      Feedback: settings.feedback
+    }, resolve);
+  });
+}
 
+function sendCommand(command, settings) {
+  return new Promise((resolve) => {
+    chrome.runtime.sendMessage({
+      type: "IUT_EVALUATION_COMMAND",
+      command,
+      settings
+    }, function (response) {
+      if (chrome.runtime.lastError) {
+        resolve({ ok: false, error: chrome.runtime.lastError.message });
+        return;
+      }
 
-document.getElementById('ratingForm').addEventListener('submit', function (event) { // if submit button is pressed
-  event.preventDefault();
+      resolve(response || { ok: false, error: "No response received." });
+    });
+  });
+}
 
-  var rating = document.querySelector('input[name="rating"]:checked').value;
-  chrome.storage.local.set({ 'Rating': rating }); //save the value in local storage
+function getSelectedSettings() {
+  const checkedRating = document.querySelector('input[name="rating"]:checked');
+  return {
+    rating: checkedRating ? checkedRating.value : DEFAULT_RATING,
+    feedback: feedbackInput.value.trim() || DEFAULT_FEEDBACK
+  };
+}
 
+function setStatus(message, type = "info") {
+  statusText.textContent = message;
+  statusText.dataset.type = type;
+}
 
-  var feedback = document.getElementById('feedback').value;
-  chrome.storage.local.set({ 'Feedback': feedback }); //save the value in local storage
+function setBusy(isBusy) {
+  fillCurrentBtn.disabled = isBusy || fillCurrentBtn.dataset.available !== "true";
+  submitAllBtn.disabled = isBusy || submitAllBtn.dataset.available !== "true";
+  form.setAttribute("aria-busy", String(isBusy));
+}
 
+function setAvailability(state) {
+  const canFill = state && state.page === "course";
+  const canSubmitAll = state && state.page === "list" && state.courseCount > 0;
 
-  chrome.runtime.sendMessage({ submit: true }); // send message to background.js when submit is pressed
+  fillCurrentBtn.dataset.available = String(canFill);
+  submitAllBtn.dataset.available = String(canSubmitAll);
+  fillCurrentBtn.disabled = !canFill;
+  submitAllBtn.disabled = !canSubmitAll;
 
-});
-
-
-document.getElementById('submitAllBtn').addEventListener('click', function (event) { // if submit all button is pressed
-  event.preventDefault();
-  const courseLinks = document.querySelectorAll(".course-action > a");
-  if (courseLinks.length === 0) {
-    alert("No course evaluation links found on this page. go to'https://sis.iutoic-dhaka.edu/evaluation-list'");
+  if (!state || state.page === "unsupported") {
+    pageStateText.textContent = "Open an SIS evaluation page.";
     return;
   }
 
-  const basePayload = {
-    "course_allocation_detail_id": "",
-    "answers": [
-      { "question_id": 1, "value": 5 },
-      { "question_id": 2, "value": 5 },
-      { "question_id": 3, "value": 5 },
-      { "question_id": 4, "value": 5 },
-      { "question_id": 5, "value": "N/A" },
-      { "question_id": 6, "value": 5 },
-      { "question_id": 7, "value": "N/A" },
-      { "question_id": 8, "value": 5 },
-      { "question_id": 9, "value": 5 },
-      { "question_id": 10, "value": 5 },
-      { "question_id": 11, "value": 5 },
-      { "question_id": 12, "value": 5 },
-      { "question_id": 13, "value": "N/A" },
-      { "question_id": 14, "value": 5 },
-      { "question_id": 15, "value": 5 },
-      { "question_id": 16, "value": 5 },
-      { "question_id": 17, "value": 5 },
-      { "question_id": 18, "value": "N/A" },
-      { "question_id": 19, "value": 5 },
-      { "question_id": 20, "value": 5 },
-      { "question_id": 21, "value": 5 },
-      { "question_id": 22, "value": 5 },
-      { "question_id": 23, "value": "N/A" },
-      { "question_id": 24, "value": 5 },
-      { "question_id": 25, "value": 5 },
-      { "question_id": 26, "value": 5 },
-      { "question_id": 27, "value": "N/A" },
-      { "question_id": 28, "value": 5 },
-      { "question_id": 29, "value": 5 },
-      { "question_id": 30, "value": 5 },
-      { "question_id": 31, "value": 5 },
-      { "question_id": 32, "value": 5 },
-      { "question_id": 33, "value": 5 },
-      { "question_id": 34, "value": "N/A" },
-      { "question_id": 35, "value": "N/A" },
-      { "question_id": 36, "value": "N/A" }
-    ]
-  };
-  function getCookie(name) {
-    return document.cookie.split("; ").find(row => row.startsWith(name + "="))?.split("=")[1];
+  if (state.page === "course") {
+    pageStateText.textContent = "Ready to submit this course.";
+    return;
   }
 
-  const xsrfToken = getCookie("XSRF-TOKEN");
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+  pageStateText.textContent = state.courseCount === 1
+    ? "1 course link found."
+    : `${state.courseCount} course links found.`;
+}
 
-  courseLinks.forEach(async (a) => {
-    const parts = a.href.split("/");
-    const id = parts.pop() || parts.pop(); // handles trailing slash
-    console.log(a.href);
+async function initialize() {
+  const settings = await getStoredSettings();
+  const ratingInput = document.querySelector(`input[name="rating"][value="${settings.rating}"]`);
+  (ratingInput || document.querySelector(`input[name="rating"][value="${DEFAULT_RATING}"]`)).checked = true;
+  feedbackInput.value = settings.feedback;
 
-    const payload = {
-      ...basePayload,
-      course_allocation_detail_id: id
-    };
+  const pageState = await sendCommand("getPageState");
+  if (pageState.ok) {
+    setAvailability(pageState);
+    if (pageState.page === "unsupported") {
+      setStatus("Open the SIS evaluation list or a course evaluation page.", "error");
+    } else {
+      setStatus("Ready.");
+    }
+  } else {
+    setAvailability({ page: "unsupported" });
+    setStatus(pageState.error, "error");
+  }
+}
 
-    fetch("https://sis.iutoic-dhaka.edu/api/course-evaluate", {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Accept": "application/json, text/plain, */*",
-        "Content-Type": "application/json",
-        "X-CSRF-TOKEN": csrfToken,
-        "X-XSRF-TOKEN": xsrfToken,
-        "X-Requested-With": "XMLHttpRequest",
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-origin",
-        "Sec-GPC": "1"
-      },
-      body: JSON.stringify(payload)
-    })
-      .then(r => r.json().catch(() => r.text()))
-      .then(data => console.log("Response:", data))
-      .catch(err => console.error("Error:", err));
+form.addEventListener("submit", async function (event) {
+  event.preventDefault();
+  const settings = getSelectedSettings();
+  await saveSettings(settings);
 
-  })
-  chrome.runtime.sendMessage({ submitAll: true }); // send message to background.js when submit all is pressed
+  setBusy(true);
+  setStatus("Filling and submitting current course...");
+  const response = await sendCommand("submitCurrent", settings);
+  setBusy(false);
+
+  if (!response.ok) {
+    setStatus(response.error || "Could not submit the current course.", "error");
+    return;
+  }
+
+  setStatus(
+    `Submitted current course. Returning to evaluation list...`,
+    "success"
+  );
 });
+
+submitAllBtn.addEventListener("click", async function () {
+  const settings = getSelectedSettings();
+  await saveSettings(settings);
+
+  setBusy(true);
+  setStatus("Submitting listed courses...");
+  const response = await sendCommand("submitAll", settings);
+  setBusy(false);
+
+  if (!response.ok) {
+    setStatus(response.error || "Could not submit listed courses.", "error");
+    return;
+  }
+
+  const failedText = response.failedCount > 0 ? ` ${response.failedCount} failed.` : "";
+  setStatus(`Submitted ${response.successCount}/${response.totalCount} courses.${failedText}`, "success");
+});
+
+initialize();

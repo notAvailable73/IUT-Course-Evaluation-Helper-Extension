@@ -1,36 +1,59 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Evaluate SIS</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IUT Course Evaluation Helper</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <p class="Title">Evaluate Course</p>
-        <form id="ratingForm">
-            <div class="radio-group">
-                <input type="radio" id="1" name="rating" value="1" />
-                <label for="1">1</label>
-                <input type="radio" id="2" name="rating" value="2" />
-                <label for="2">2</label>
-                <input type="radio" id="3" name="rating" value="3" />
-                <label for="3">3</label>
-                <input type="radio" id="4" name="rating" value="4" />
-                <label for="4">4</label>
-                <input type="radio" id="5" name="rating" value="5" />
-                <label for="5">5</label>
+  <main class="container">
+    <header class="header">
+      <img src="images/logo.png" alt="" class="logo">
+      <div>
+        <h1>IUT Evaluation Helper</h1>
+        <p id="pageState" class="page-state">Checking current page...</p>
+      </div>
+    </header>
 
-              </div>
-              <div class="textbox-container">
-                <input type="text" id="feedback"/>
-              </div>
+    <form id="ratingForm">
+      <fieldset class="field-group">
+        <legend>Default Rating</legend>
+        <div class="radio-group" role="radiogroup" aria-label="Default rating">
+          <input type="radio" id="rating-1" name="rating" value="1">
+          <label for="rating-1">1</label>
+          <input type="radio" id="rating-2" name="rating" value="2">
+          <label for="rating-2">2</label>
+          <input type="radio" id="rating-3" name="rating" value="3">
+          <label for="rating-3">3</label>
+          <input type="radio" id="rating-4" name="rating" value="4">
+          <label for="rating-4">4</label>
+          <input type="radio" id="rating-5" name="rating" value="5">
+          <label for="rating-5">5</label>
+        </div>
+      </fieldset>
 
-            <input type="submit" value="Submit" />
-            <button type="button" id="submitAllBtn">Submit All</button>
-        </form>
-    </div>
-    <script src="script.js"></script>
+      <label class="feedback-label" for="feedback">Text Feedback</label>
+      <textarea id="feedback" rows="3" placeholder="N/A"></textarea>
 
+      <div class="actions">
+        <button type="submit" id="fillCurrentBtn">Fill & Submit Current Course</button>
+        <button type="button" id="submitAllBtn">Evaluate All Listed Courses</button>
+      </div>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+    </form>
+
+    <footer class="footer">
+      <a
+        href="https://github.com/notAvailable73/IUT-Course-Evaluation-Helper-Extension"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Give this project a star on GitHub
+      </a>
+    </footer>
+  </main>
+  <script src="script.js"></script>
 </body>
 </html>

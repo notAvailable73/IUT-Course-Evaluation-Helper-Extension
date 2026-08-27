@@ -1,46 +1,81 @@
 # IUT Course Evaluation Helper Extension
 
-This browser extension is designed to help IUT students quickly complete their course evaluations each semester. It will only work on [IUT-SIS](https://sis.iutoic-dhaka.edu) for evaluating the courses.
+IUT Course Evaluation Helper is a Chromium browser extension for quickly filling IUT SIS course evaluation forms.
 
-## Introduction
+It works only on:
 
-For **IUT students**, evaluating each course every semester involves answering around 36 questions: 9 are text boxes, and 27 are radio buttons where students rate from 1 to 5 stars. This process is very time-consuming, especially with 10 or more courses to evaluate.
+- `https://sis.iutoic-dhaka.edu/evaluate-course/*`
+- `https://sis.iutoic-dhaka.edu/evaluation-list*`
 
-This extension is created to save time. With one click, all questions will be filled with your provided values.
+## Features
 
-## Download and Installation Guide
+- Save a default numeric rating from 1 to 5.
+- Save reusable text feedback.
+- Fill and submit the currently opened course evaluation form.
+- Submit all course links found on the SIS evaluation list page.
+- Show success and error status directly inside the popup.
+- Link users to the project repository to give it a star.
+- Use only the required SIS host permission instead of broad all-site access.
 
-This is a browser extension for Chrome and other Chromium-based browsers like Microsoft Edge.
+## Installation
 
-1. **Download the Extension**
-   - Click on [this link](https://github.com/notAvailable73/IUT-Course-Evaluation-Helper-Extension/archive/refs/heads/main.zip) to download the extension files.
-   - Extract the downloaded file.
+This extension works in Chrome, Microsoft Edge, and other Chromium-based browsers.
 
-2. **Install the Extension**
-   - Open your Chrome or Edge browser.
-   - Go to the Extensions page by clicking on the three dots at the top right corner, then selecting `Extensions` > `Manage Extensions`.
-   - Turn on **Developer mode**. You can find the switch at the top right of the Extensions page.
-     - ![Developer mode](images/developer_mode.png)
-   - Click on the `Load unpacked` button.
-     - ![Load unpacked button](images/load_unpacked.png)
-   - Select the folder where you downloaded and extracted the extension files.
-   - The extension will be installed, and you will see it in the list of extensions. Pin it to use it comfortably.
-     - ![Installed extension](images/installed_extension.png)
+1. Download the extension source code from GitHub.
+2. Extract the downloaded archive.
+3. Open your browser's Extensions page.
+4. Enable **Developer mode**.
 
-## How to Use the Extension
- 
-   - The extension icon will appear next to the address bar in your browser.
-     - ![Extension icon](images/extension_icon.png)
-   - Go to [SIS-Evaluation](https://sis.iutoic-dhaka.edu/evaluation-list) to evaluate any course. Select any course that has not been evaluated.
-   - If the page was already visited before installation, please reload the page.
-   - Click on the extension icon next to the address bar.
-   - Provide your input values and then click submit.
-## Like the project?
-   - Don't forget us from your Du'a! 🤲
-   - If you like the project, please consider giving it a star ⭐️
-      - ![Give Star](images/give_star.png)
+   ![Developer mode](images/developer_mode.png)
+
+5. Click **Load unpacked**.
+
+   ![Load unpacked button](images/load_unpacked.png)
+
+6. Select the extracted extension folder.
+7. Pin the extension from the browser toolbar.
+
+   ![Installed extension](images/installed_extension.png)
+
+## Usage
+
+### Fill and Submit One Course
+
+1. Open an unevaluated course from `https://sis.iutoic-dhaka.edu/evaluation-list`.
+2. If the page was opened before installing or reloading the extension, refresh the page.
+3. Click the extension icon.
+
+   ![Extension icon](images/extension_icon.png)
+
+4. Select the default rating and enter text feedback.
+5. Click **Fill & Submit Current Course**.
+6. The extension fills the form, clicks the SIS submit button, and returns the tab to `https://sis.iutoic-dhaka.edu/evaluation-list`.
+
+### Evaluate All Listed Courses
+
+1. Open `https://sis.iutoic-dhaka.edu/evaluation-list`.
+2. Click the extension icon.
+3. Select the default rating and enter text feedback.
+4. Click **Evaluate All Listed Courses**.
+5. Wait for the popup status message to show how many course submissions succeeded.
+
+## Notes
+
+- The extension can only work while you are logged in to SIS.
+- If SIS changes its course evaluation form or API, the bulk submit feature may need an update.
+- The popup disables actions that do not apply to the current page.
 
 ## Troubleshooting
 
-- If you don't see the extension icon, make sure it's enabled.
-- If you face any issues, try reloading the extension by turning Developer mode off and on again, then click `Load unpacked` and select the folder again.
+- If the popup says to open an SIS evaluation page, make sure the active tab is on the course evaluation form or evaluation list.
+- If the extension was loaded after a SIS page was already open, reload that SIS page.
+- If a bulk submission fails, confirm that you are logged in and that course links are visible on the evaluation list.
+- If the extension icon is missing, confirm that the extension is enabled and pinned.
+
+## Like the Project?
+
+- Don't forget us from your Du'a! 🤲
+- If you like the project, please consider giving it a star: `https://github.com/notAvailable73/IUT-Course-Evaluation-Helper-Extension`
+- The popup also includes a GitHub star link.
+
+  ![Give Star](images/give_star.png)
