@@ -204,3 +204,36 @@ button:disabled {
   color: var(--primary-dark);
   text-decoration: underline;
 }
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.toggle input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: var(--primary);
+}
+
+button.secondary {
+  border: 1px solid var(--primary);
+  background: var(--surface);
+  color: var(--primary);
+}
+
+button.secondary:hover:not(:disabled) {
+  background: #eef4fd;
+}
+
+button.secondary:disabled {
+  border-color: var(--disabled);
+  background: var(--surface);
+  color: var(--disabled);
+}

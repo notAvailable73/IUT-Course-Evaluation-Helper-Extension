@@ -1,7 +1,15 @@
+// Chrome/Edge expose `chrome`; Firefox exposes `browser` (and a callback-only `chrome`).
+// Both support the promise-based API when called through this handle.
+const ext = globalThis.browser ?? globalThis.chrome;
+
 const DEFAULT_SETTINGS = {
   rating: "5",
   feedback: "N/A"
 };
+
+const TEXT_FIELD_SELECTOR = "textarea.form-control, input.form-control[type='text']";
+const AUTOFILL_FLAG = "iutAutofilled";
+const AUTOFILL_DEBOUNCE_MS = 250;
 
 const TEXT_QUESTION_IDS = new Set([5, 7, 13, 18, 23, 27, 34, 35, 36]);
 const QUESTION_COUNT = 36;
@@ -20,14 +28,46 @@ function dispatchInputEvents(element) {
   element.dispatchEvent(new Event("change", { bubbles: true }));
 }
 
+function getTextFields() {
+  return Array.from(document.querySelectorAll(TEXT_FIELD_SELECTOR))
+    .filter((field) => !field.disabled && !field.readOnly);
+}
+
+function setFieldValue(field, value) {
+  field.value = value;
+  dispatchInputEvents(field);
+}
+
+function fillTextBoxes(settings) {
+  const normalized = normalizeSettings(settings);
+  const feedbackFields = getTextFields();
+
+  if (feedbackFields.length === 0) {
+    return {
+      ok: false,
+      error: "No text boxes were found on this page."
+    };
+  }
+
+  feedbackFields.forEach((field) => {
+    field.dataset[AUTOFILL_FLAG] = "1";
+    setFieldValue(field, normalized.feedback);
+  });
+
+  return {
+    ok: true,
+    feedbackCount: feedbackFields.length
+  };
+}
+
 function fillCurrentCourse(settings) {
   const normalized = normalizeSettings(settings);
-  const feedbackFields = document.querySelectorAll("textarea.form-control, input.form-control[type='text']");
+  const feedbackFields = getTextFields();
   const ratingFields = document.querySelectorAll(`input[type="radio"][value="${normalized.rating}"]`);
 
   feedbackFields.forEach((field) => {
-    field.value = normalized.feedback;
-    dispatchInputEvents(field);
+    field.dataset[AUTOFILL_FLAG] = "1";
+    setFieldValue(field, normalized.feedback);
   });
 
   ratingFields.forEach((field) => {
@@ -250,7 +290,62 @@ function getPageState() {
   };
 }
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+function isCoursePage() {
+  return window.location.pathname.startsWith("/evaluate-course/");
+}
+
+// Fills empty text boxes once each, so anything you type or clear afterwards is left alone.
+async function runAutoFill() {
+  if (!isCoursePage()) {
+    return;
+  }
+
+  const pending = getTextFields().filter((field) => !field.dataset[AUTOFILL_FLAG]);
+  if (pending.length === 0) {
+    return;
+  }
+
+  let stored;
+  try {
+    stored = await ext.storage.local.get(["Feedback", "AutoFillText"]);
+  } catch (error) {
+    return;
+  }
+
+  if (stored.AutoFillText === false) {
+    return;
+  }
+
+  const feedback = normalizeSettings({ feedback: stored.Feedback }).feedback;
+
+  pending.forEach((field) => {
+    if (field.dataset[AUTOFILL_FLAG]) {
+      return;
+    }
+    field.dataset[AUTOFILL_FLAG] = "1";
+    if (field.value.trim() === "") {
+      setFieldValue(field, feedback);
+    }
+  });
+}
+
+let autoFillTimer = null;
+
+function scheduleAutoFill() {
+  clearTimeout(autoFillTimer);
+  autoFillTimer = setTimeout(runAutoFill, AUTOFILL_DEBOUNCE_MS);
+}
+
+function startAutoFill() {
+  runAutoFill();
+  // SIS may render the form after load, so keep watching for new text boxes.
+  new MutationObserver(scheduleAutoFill).observe(document.documentElement, {
+    childList: true,
+    subtree: true
+  });
+}
+
+ext.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (request && request.message === "Start Evaluate") {
     sendResponse(fillCurrentCourse());
     return false;
@@ -270,6 +365,11 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     return true;
   }
 
+  if (request.command === "fillText") {
+    sendResponse(fillTextBoxes(request.settings));
+    return false;
+  }
+
   if (request.command === "fillCurrent") {
     sendResponse(fillCurrentCourse(request.settings));
     return false;
@@ -283,3 +383,5 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   sendResponse({ ok: false, error: "Unknown command." });
   return false;
 });
+
+startAutoFill();

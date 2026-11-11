@@ -17,6 +17,11 @@
     </header>
 
     <form id="ratingForm">
+      <label class="toggle" for="autoFill">
+        <input type="checkbox" id="autoFill">
+        <span>Auto-fill text boxes when a course page opens</span>
+      </label>
+
       <fieldset class="field-group">
         <legend>Default Rating</legend>
         <div class="radio-group" role="radiogroup" aria-label="Default rating">
@@ -33,10 +38,11 @@
         </div>
       </fieldset>
 
-      <label class="feedback-label" for="feedback">Text Feedback</label>
+      <label class="feedback-label" for="feedback">Default Text</label>
       <textarea id="feedback" rows="3" placeholder="N/A"></textarea>
 
       <div class="actions">
+        <button type="button" id="fillTextBtn" class="secondary">Fill Text Boxes Now</button>
         <button type="submit" id="fillCurrentBtn">Fill & Submit Current Course</button>
         <button type="button" id="submitAllBtn">Evaluate All Listed Courses</button>
       </div>

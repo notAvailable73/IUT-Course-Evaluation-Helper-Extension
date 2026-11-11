@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.3.0 - 2026-11-11
+
+### Added
+
+- Firefox support (Firefox 140+): `browser_specific_settings` in the manifest and a `browser`/`chrome` compatibility handle in the popup and content script.
+- **Auto-fill text boxes when a course page opens** toggle (on by default). Empty text boxes are filled once with the saved default text, including boxes SIS renders after page load.
+- **Fill Text Boxes Now** button to fill only the text boxes on the current course page.
+- Popup settings (rating, default text, auto-fill toggle) now save as they change.
+
+### Changed
+
+- The popup now messages the page's content script directly; `background.js` was removed because Firefox does not run MV3 `service_worker` backgrounds.
+- Dropped the unused `activeTab` permission.
+- Renamed **Text Feedback** to **Default Text**.
+
 ## 1.2.0 - 2026-08-27
 
 ### Changed
